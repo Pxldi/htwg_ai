@@ -26,24 +26,24 @@ public class A_Star {
 		if (startBoard.isSolved())
 			return new LinkedList<>();
 		
-		openList.add(startBoard, 0);
-		List<Board> closedList = new LinkedList<>();
+		openList.add(startBoard, startBoard.h2());
+		cost.put(startBoard, 0);
+		IndexMinPQ<Board, Integer> closedList = new IndexMinPQ<>();
 
 		while (!openList.isEmpty()) {
 			Board curBoard = openList.removeMin();
 			if (curBoard.isSolved())
 				return solutionPath(curBoard);
-			cost.put(curBoard, 0);
-			closedList.add(curBoard);
+			closedList.add(curBoard, cost.get(curBoard));
 
 			for (Board child : curBoard.possibleActions()) {
-				if (openList.get(child) == null && !closedList.contains(child)) {
+				if (openList.get(child) == null && closedList.get(child) == null) {
 					pred.put(child, curBoard);
-					cost.put(child, cost.get(curBoard) + 1);
+					cost.put(child, closedList.get(curBoard) + 1);
 					openList.add(child, cost.get(curBoard) + child.h2());
 				}
 				else if (openList.get(child) != null) {
-					if (cost.get(curBoard) + 1 < cost.get(child)) {
+					if (openList.get(child) > cost.get(curBoard) + child.h2()) {
 						pred.put(child, curBoard);
 						cost.put(child, cost.get(curBoard) + 1);
 						openList.change(child, cost.get(curBoard) + child.h2());
@@ -61,6 +61,7 @@ public class A_Star {
 			path.addFirst(curBoard);
 			curBoard = pred.get(curBoard);
 		}
+		path.addFirst(initialBoard);
 		return path;
 	}
 
