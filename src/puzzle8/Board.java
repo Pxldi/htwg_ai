@@ -1,8 +1,6 @@
 package puzzle8;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.LinkedList;
+import java.util.*;
 
 /**
  * Klasse Board für 8-Puzzle-Problem
@@ -26,7 +24,20 @@ public class Board {
 	 * Generiert ein zufälliges Board.
 	 */
 	public Board() {
+		this.board = new int[]{0,1,2,3,4,5,6,7,8};
+		do {
+			shuffle(this.board);
+		} while (!parity());
+	}
 
+	private void shuffle(int[] array) {
+		Random random = new Random();
+		for (int i = 0; i < array.length; i++) {
+			int randomIdx = random.nextInt(array.length);
+			int temp = array[randomIdx];
+			array[randomIdx] = array[i];
+			array[i] = temp;
+		}
 	}
 	
 	/**
@@ -72,31 +83,48 @@ public class Board {
 	public boolean parity() {
 		int pairs_count = 0;
 		for (int i = 0; i < this.board.length; i++) {
-			if (board[i] == 0)
+			if (this.board[i] == 0)
 				continue;
 			for (int j = 0; j < i; j++) {
 				if (this.board[j] > this.board[i])
 					pairs_count++;
 			}
 		}
-		System.out.println(pairs_count);
 		return pairs_count % 2 == 0;
 	}
 	
 	/**
-	 * Heurstik h1. (siehe Aufgabenstellung)
+	 * Heuristik h1. (siehe Aufgabenstellung)
 	 * @return Heuristikwert.
 	 */
 	public int h1() {
-		return 0; 
+		int cost = 0;
+		for (int i = 0; i < this.board.length; i++) {
+			if (this.board[i] == 0)
+				continue;
+			if (this.board[i] != i)
+				cost++;
+		}
+		return cost;
 	}
 	
 	/**
-	 * Heurstik h2. (siehe Aufgabenstellung)
+	 * Heuristik h2. (siehe Aufgabenstellung)
 	 * @return Heuristikwert.
 	 */
 	public int h2() {
-		return 0;
+		int cost = 0;
+		int width = 3;
+		for (int i = 0; i < this.board.length; i++) {
+			if (this.board[i] == 0)
+				continue;
+			int aX = i % width;
+			int aY = i / width;
+			int bX = this.board[i] % width;
+			int bY = this.board[i] / width;
+			cost += Math.abs(aX - bX) + Math.abs(aY - bY);
+		}
+		return cost;
 	}
 	
 	/**
@@ -105,17 +133,44 @@ public class Board {
 	 */
 	public List<Board> possibleActions() {
 		List<Board> boardList = new LinkedList<>();
-		// ...
+		int blank = -1;
+		for (int i = 0; i < this.board.length; i++) {
+			if (this.board[i] == 0) {
+				blank = i;
+			}
+		}
+
+		int width = (N + 1) / 3;
+		int blankY = blank / width;
+		int blankX = blank % width;
+
+		if (blankY != 0) {
+			boardList.add(swap(blank - 3, blank));
+		}
+		if (blankY != 2) {
+			boardList.add(swap(blank + 3, blank));
+		}
+		if (blankX != 0) {
+			boardList.add(swap(blank - 1, blank));
+		}
+		if (blankX != 2) {
+			boardList.add(swap(blank + 1, blank));
+		}
 		return boardList;
 	}
-	
+	public Board swap(int newPos, int blankPos) {
+		int[] temp = this.board.clone();
+		temp[blankPos] = temp[newPos];
+		temp[newPos] = 0;
+		return new Board(temp);
+	}
 	
 	/**
 	 * Prüft, ob das Board ein Zielzustand ist.
-	 * @return true, falls Board Ziestzustand (d.h. 0,1,2,3,4,5,6,7,8)
+	 * @return true, falls Board Zielzustand (d.h. 0,1,2,3,4,5,6,7,8)
 	 */
 	public boolean isSolved() {
-		return true;
+		return Arrays.equals(this.board, new int[]{0,1,2,3,4,5,6,7,8});
 	}
 	
 	
@@ -134,4 +189,3 @@ public class Board {
 		System.out.println(goal.isSolved());
 	}
 }
-	
