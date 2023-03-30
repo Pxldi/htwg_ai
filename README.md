@@ -1,2 +1,2 @@
 # htwg_ai
-Artificial Intelligence Module in HTWG [SS 23]
+AI Modul HTWG [SS 23]
