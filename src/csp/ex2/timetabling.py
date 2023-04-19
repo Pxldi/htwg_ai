@@ -1,20 +1,23 @@
-import math
-import sys
 import constraint
 
 problem = constraint.Problem()
 
+# Values
 room = [1, 2, 3, 4]
 
+# Variables
 teacher = ['Maier', 'Huber', 'Müller', 'Schmid']
 subject = ['Deutsch', 'Englisch', 'Mathematik', 'Physik']
 
+# Add variables to the problems values
 problem.addVariables(teacher, room)
 problem.addVariables(subject, room)
 
+# Constraints: values of all variables have to be different
 problem.addConstraint(constraint.AllDifferentConstraint(), teacher)
 problem.addConstraint(constraint.AllDifferentConstraint(), subject)
 
+# Specific constraints:
 # Herr Maier prüft nie in Raum 4
 problem.addConstraint(lambda a: a != 4, ['Maier'])
 # Herr Müller prüft immer Deutsch
@@ -31,8 +34,6 @@ problem.addConstraint(lambda a, b: a != 1 and b != 1, ('Deutsch', 'Englisch'))
 solutions = problem.getSolutions()
 
 print("Solutions: {}".format(len(solutions)))
-
-#print(solutions[0])
 
 sol = {}
 for k, v in solutions[0].items():
