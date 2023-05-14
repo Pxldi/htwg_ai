@@ -15,8 +15,8 @@ def solve(rectangles, big_rectangle_width, big_rectangle_height):
             problem.addVariable(f'x_{i}', range(big_rectangle_width - height + 1))
             problem.addVariable(f'y_{i}', range(big_rectangle_height - width + 1))
             problem.addVariable(f"o{i}", [0, 1])
-        # o0 = horizontal
-        # o1 = vertical
+        # o: 0 = horizontal
+        # o: 1 = vertical
 
         # print(f"x{i}", range(big_rectangle[0] - max(currRect) + 1), range(big_rectangle[1] - max(currRect) + 1))
 
