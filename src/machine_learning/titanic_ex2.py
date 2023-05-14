@@ -2,6 +2,7 @@ import pandas as pd
 from sklearn.metrics import accuracy_score
 from sklearn.linear_model import LinearRegression
 from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
 import os
 
 # a)
@@ -86,21 +87,40 @@ test_val = pd.get_dummies(test_val, columns=['Sex'])
 train_val = pd.get_dummies(train_val, columns=['Pclass'])
 test_val = pd.get_dummies(test_val, columns=['Pclass'])
 
-print(train_val)
+print(train_val.head())
 
 # Create the model and train it
 model = LogisticRegression()
-model.fit(train_val['Pclass_1'], train_val['Survived'])
-model.fit(train_val['Pclass_2'], train_val['Survived'])
-model.fit(train_val['Pclass_3'], train_val['Survived'])
-model.fit(train_val['Sex_1'], train_val['Survived'])
-model.fit(train_val['Sex_2'], train_val['Survived'])
+features = ['Pclass_1', 'Pclass_2', 'Pclass_3', 'Sex_female', 'Sex_male']
+model.fit(train_val[features], train_val['Survived'])
 
 # Predict the test data
-pred = model.predict(test_val['Survived'])
+pred = model.predict(test_val[features])
 pred = pred.round().astype(int)
 
 output = pd.DataFrame({'PassengerId': test_val.PassengerId, 'Survived': pred})
-output.to_csv('logistic_regression.csv', index=False)
+output.to_csv('logistic_regression2.csv', index=False)
 print("Your submission was successfully saved!")
 
+# e)
+train_val = pd.read_csv(os.path.join(dirname, 'titanic_src/train.csv'))
+test_val = pd.read_csv(os.path.join(dirname, 'titanic_src/test.csv'))
+train_val['Age'] = train_val['Age'].fillna(train_val['Age'].median(skipna=True))
+test_val['Age'] = test_val['Age'].fillna(test_val['Age'].median(skipna=True))
+train_val = pd.get_dummies(train_val, columns=['Sex'])
+test_val = pd.get_dummies(test_val, columns=['Sex'])
+train_val = pd.get_dummies(train_val, columns=['Pclass'])
+test_val = pd.get_dummies(test_val, columns=['Pclass'])
+
+# Create the model and train it
+rf = RandomForestClassifier(n_estimators=100, max_depth=5, random_state=1)
+features = ['Pclass_1', 'Pclass_2', 'Pclass_3', 'Sex_female', 'Sex_male', 'Age']
+rf.fit(train_val[features], train_val['Survived'])
+
+# Predict the test data
+pred = rf.predict(test_val[features])
+pred = pred.round().astype(int)
+
+output = pd.DataFrame({'PassengerId': test_val.PassengerId, 'Survived': pred})
+output.to_csv('random_forest.csv', index=False)
+print("Your submission was successfully saved!")
